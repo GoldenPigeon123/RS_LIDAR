@@ -39,8 +39,8 @@ endif()
 # ==================== 编译选项开关 ====================
 option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" OFF)
 option(EXECUTIONLIB "Include execution in .cpp" OFF)
-option(PRINT_PARAMETER "cout parameters of lidar to console" ON)
-option(PRINT_DEBUG "cout debug to console" ON)
+option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
+option(PRINT_DEBUG "cout debug to console" OFF)
 option(PRINT_MSG "cout brief message of every frames to console when 'getPointCloud' call" ON)
 option(RS_TIME_RECORD "cout time record to console" ON)
 

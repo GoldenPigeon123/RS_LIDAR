@@ -10,7 +10,7 @@ reader.start()
 while reader.isDriverRunning():
     cloud = reader.getPointCloud()
     if cloud:
-        # 直接转换为Numpy数组
+        # 直接转换为Numpy数组 [[X,Y,Z,I],...]
         points_np = cloud.to_numpy()
         print(f"帧 {cloud.seq} - 数组形状: {points_np.shape}")  # 输出 (N, 4)
         reader.freePointCloud(cloud)
