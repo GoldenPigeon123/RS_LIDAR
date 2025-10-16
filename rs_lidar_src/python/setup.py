@@ -161,7 +161,7 @@ class BuildExt(build_ext):
         # Windows系统可后续扩展（如添加/MSVC选项）
         super().build_extensions()  # 调用父类方法完成编译（不可修改）
 
-# -------------------------- 核心setup配置（完整声明项目信息，支持Python 3.6-3.12）--------------------------
+# -------------------------- 核心setup配置（完整声明项目信息，支持Python 3.6-3.14）--------------------------
 setup(
     name=PROJECT_NAME,
     version=__version__,
@@ -176,13 +176,13 @@ setup(
     ext_modules=get_extensions(),  # 关联扩展模块（不可修改）
     cmdclass={"build_ext": BuildExt},  # 关联自定义编译类（不可修改）
     install_requires=REQUIRES,  # 自动安装基础依赖（不可删除，确保依赖自动拉取）
-    python_requires=">=3.6, <=3.12",  # 明确支持Python 3.6-3.12（用户可根据实际兼容范围调整）
+    python_requires=">=3.6, <=3.14",  # 明确支持Python 3.6-3.14（用户可根据实际兼容范围调整）
     classifiers=[  # 分类器（便于PyPI检索，标注项目特性，可按需补充）
         "Development Status :: 4 - Beta",  # 项目状态：测试版（稳定后可改Stable为"5 - Production/Stable"）
         "License :: OSI Approved :: BSD License",  # 许可证分类（BSD-3-Clause，不可修改）
         "Programming Language :: C++",  # 核心语言（不可修改）
         "Programming Language :: Python :: 3",  # 主语言（不可修改）
-        # 完整列出支持的Python版本（3.6-3.12，可根据实际兼容情况增删）
+        # 完整列出支持的Python版本（3.6-3.14）
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -190,7 +190,9 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "Operating System :: POSIX :: Linux",  # 目标系统：Linux（适配Jetson，不可修改）
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Operating System :: POSIX :: Linux",  # 目标系统：Linux
         "Topic :: Scientific/Engineering :: Robotics",  # 领域：机器人（可按需补充）
         "Topic :: Software Development :: Libraries :: Python Modules",  # 类型：Python库（不可修改）
         "Intended Audience :: Developers",  # 目标用户：开发者（不可修改）
