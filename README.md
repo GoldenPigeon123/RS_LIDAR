@@ -1,0 +1,4 @@
+浙江财经大学基于Robosense driverAPI的二次开发
+
+rs_lidar_cpp: 支持PCL和普通点云数据类型
+rs_lidar_python:仅支持普通点云类型

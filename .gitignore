@@ -1,0 +1,12 @@
+build*
+.vscode
+
+
+# rs_lidar_cpp
+rs_lidar_cpp/
+
+# rs_lidar_python
+rs_lidar_pyhton/test/data/record/
+rs_lidar_python/src/build/
+rs_lidar_python/src/dist/
+rs_lidar_python/src/rs_lidar.egg-info/
