@@ -144,3 +144,48 @@ target_link_libraries(demo_online PUBLIC
 if(USE_PCL_POINT_TYPE)
   target_link_libraries(demo_online PUBLIC ${PCL_LIBRARIES})
 endif()
+
+
+
+# ==================== 安装规则 ====================
+# 1. 安装头文件
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include/
+        DESTINATION include/rs_reader
+        FILES_MATCHING PATTERN "*.h"
+        )
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include/
+        DESTINATION include/rs_reader/rs_type
+        FILES_MATCHING PATTERN "*.h"
+        )
+
+# 2. 安装静态库
+install(TARGETS rs_reader
+        ARCHIVE DESTINATION lib
+        )
+
+# 3. 生成CMake配置文件
+# 创建目标导出
+export(TARGETS rs_reader
+       FILE rs_readerTargets.cmake
+       NAMESPACE rs_reader::
+       )
+
+# 生成rs_readerConfig.cmake
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/rs_readerConfig.cmake.in
+    ${CMAKE_BINARY_DIR}/rs_readerConfig.cmake
+    @ONLY
+)
+install(FILES ${CMAKE_BINARY_DIR}/rs_readerConfig.cmake
+        DESTINATION lib/cmake/rs_reader
+        )
+
+# 生成版本文件
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/rs_readerConfigVersion.cmake.in
+    ${CMAKE_BINARY_DIR}/rs_readerConfigVersion.cmake
+    @ONLY
+)
+install(FILES ${CMAKE_BINARY_DIR}/rs_readerConfigVersion.cmake
+        DESTINATION lib/cmake/rs_reader
+        )
