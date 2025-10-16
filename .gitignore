@@ -1,7 +1,6 @@
 build*
 .vscode
 
-
 # rs_lidar_cpp
 rs_lidar_cpp/
 
