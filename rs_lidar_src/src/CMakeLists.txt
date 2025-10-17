@@ -79,6 +79,11 @@ if(PRINT_MSG STREQUAL ON)
   add_definitions(-DPRINT_MSG)
 endif()
 
+if(RS_TIME_RECORD STREQUAL ON)
+  message(STATUS "cout time record to console")
+  add_definitions(-DRS_TIME_RECORD)
+endif()
+
 
 # ==================== 依赖库查找 ====================
 find_package(rs_driver REQUIRED)
@@ -99,6 +104,15 @@ endif()
 
 
 # ==================== 目标编译 ====================
+
+
+
+
+
+
+
+
+
 # 编译rs_reader库（核心激光雷达读取库）
 file(GLOB RS_READER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/src/*.cpp)
 add_library(rs_reader STATIC ${RS_READER_SRC})

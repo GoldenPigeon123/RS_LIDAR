@@ -12,12 +12,10 @@ int main(){
     
     // 2. 初始化并启动阅读器
     if (!reader.init()) {
-        std::cerr << "[Error] LidarReader init failed!" << std::endl;
         return -1;
     }
     
     if (!reader.start()) {
-        std::cerr << "[Error] LidarReader start failed!" << std::endl;
         return -1;
     }
 
@@ -29,8 +27,6 @@ int main(){
             std::this_thread::sleep_for(std::chrono::milliseconds(50));  
             continue;
         }
-
-        std::cout << "[Info] Received point cloud: " << point_cloud->points.size() << " points" << std::endl;
 
         // 释放点云缓冲区
         reader.freePointCloud(point_cloud);

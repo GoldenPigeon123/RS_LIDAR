@@ -218,7 +218,7 @@ void LidarReader::driverReturnPointCloudToCallerCallback(PointCloudMsgPtr msg) {
 #endif
     
 #ifdef PRINT_MSG
-    RS_MSG << " PointCloudToCallerCallback :seq(" << msg->seq << ")size("<<msg->points.size() <<")"<< RS_REND;
+    RS_MSG << " PointCloudToCallerCallback :seq-" << msg->seq << " size:"<<msg->points.size() << RS_REND;
 #endif
 
 }

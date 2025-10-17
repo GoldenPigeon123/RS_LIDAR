@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 
 # -------------------------- 项目基础信息配置 --------------------------
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 AUTHOR = "Zhejiang University of Finance and Economics - Point Cloud Team: Zhang Zhongqian, Li Huaiyuan, Cao Yiyun 浙江财经大学信息技术与人工智能学院点云组:张忠谦,李怀苑,曹宜云"
 AUTHOR_EMAIL = "2789632062@qq.com"
 PROJECT_NAME = "rs_lidar"
@@ -87,7 +87,8 @@ def get_extensions():
         # "-DPRINT_DEBUG",       # 启用lidar调试日志打印（用户按需开启）
         "-DPRINT_MSG",            # 启用lidar运行日志打印（用户按需开启）
         # "-DPRINT_PARAMETER",     # 启用lidar参数配置打印（用户按需注释关闭）
-        "-DRS_TIME_RECORD",       # 代码耗时日志（用户按需注释关闭）
+        # "-DRS_TIME_RECORD_CPP",       # cpp代码耗时日志（用户按需注释关闭）
+        "-DRS_TIME_RECORD_PY",       # python代码耗时日志（用户按需注释关闭）
         # "-DEXECUTIONLIB",          # include <execution>
         f"-I{rs_driver_include}",  # 引入RoboSense SDK driver头文件
     ]
