@@ -26,47 +26,38 @@ REQUIRES = [
     "numpy>=1.18.0",    # 点云数据与Numpy数组转换的依赖库
 ]
 
-# -------------------------- PCL库检测函数 --------------------------
-def find_pcl_like_cmake():
-    """
-    等效CMake的：
-    find_package(PCL REQUIRED)
-    if(NOT PCL_FOUND) message(FATAL_ERROR ...) endif()
-    作用：检测PCL是否存在，返回PCL编译参数（cflags）和链接参数（libs）
-    """
+# -------------------------- 新增：获取PCL编译/链接参数 --------------------------
+def get_pcl_flags(pcl_modules=None):
+    """通过pkg-config获取PCL的头文件路径、编译参数和链接参数"""
+    if pcl_modules is None:
+        pcl_modules = ["pcl_common", "pcl_io", "pcl_filters"]  # 按需调整依赖模块
+    
+    # 获取编译参数（头文件等）
     try:
-        # 1. 调用pkg-config获取PCL编译参数（对应CMake的${PCL_DEFINITIONS}和PCL_INCLUDE_DIRS）
-        # 包含PCL头文件路径、PCL自带宏定义（如-DPCL_NO_PRECOMPILE）
-        pcl_cflags = subprocess.check_output(
-            ["pkg-config", "--cflags", "pcl_common pcl_io pcl_point_types"],  # 核心PCL模块，与CMake依赖一致
-            encoding="utf-8",
-            stderr=subprocess.STDOUT  # 捕获错误输出，便于排查
-        ).strip().split()
-
-        # 2. 调用pkg-config获取PCL链接参数（对应CMake的${PCL_LIBRARIES}）
-        pcl_libs = subprocess.check_output(
-            ["pkg-config", "--libs", "pcl_common pcl_io pcl_point_types"],
-            encoding="utf-8",
-            stderr=subprocess.STDOUT
-        ).strip().split()
-
-        # 3. 验证PCL参数有效性（避免空参数导致编译失败）
-        if not pcl_cflags or not pcl_libs:
-            raise RuntimeError("PCL找到但参数为空，可能是PCL安装不完整")
-
-        return pcl_cflags, pcl_libs
-
+        cflags = subprocess.check_output(
+            ["pkg-config", "--cflags"] + pcl_modules,
+            stderr=subprocess.STDOUT,
+            text=True
+        ).strip()
     except subprocess.CalledProcessError as e:
-        # 对应CMake的NOT PCL_FOUND，抛出明确错误
-        raise RuntimeError(
-            f"PCL库未找到!请先安装PCL并确保pkg-config可检测到:\n"
-            f"1. Ubuntu/Debian系统安装命令:sudo apt install libpcl-dev\n"
-            f"2. 验证PCL是否被pkg-config识别:pkg-config --list-all | grep pcl\n"
-            f"3. 若已安装但仍报错,需手动设置PKG_CONFIG_PATH(如:export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH)\n"
-            f"错误详情：{e.output.strip()}"
-        )
-    except Exception as e:
-        raise RuntimeError(f"PCL检测过程异常：{str(e)}")
+        raise RuntimeError(f"获取PCL编译参数失败：{e.output}\n请确保已安装PCL并配置pkg-config") from e
+    
+    # 获取链接参数（库文件等）
+    try:
+        libs = subprocess.check_output(
+            ["pkg-config", "--libs"] + pcl_modules,
+            stderr=subprocess.STDOUT,
+            text=True
+        ).strip()
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"获取PCL链接参数失败：{e.output}\n请确保已安装PCL并配置pkg-config") from e
+    
+    # 解析参数
+    extra_compile_args = cflags.split() if cflags else []
+    include_dirs = [arg[2:] for arg in extra_compile_args if arg.startswith("-I")]
+    extra_link_args = libs.split() if libs else []
+    
+    return include_dirs, extra_compile_args, extra_link_args
 
 # -------------------------- 扩展模块配置 --------------------------
 def get_extensions():
@@ -81,7 +72,7 @@ def get_extensions():
         os.path.join(os.path.dirname(__file__), "rs_bindings.cpp"),                # Python绑定代码
     ]
 
-    # -------------------------- 基础编译/链接选项（无PCL时的默认配置）--------------------------
+    # --------------------- 基础编译/链接选项--------------------------
     extra_compile_args = [
         "-std=c++17",          # C++17
         "-g",                  # 保留调试信息（便于开发排查）
@@ -92,7 +83,7 @@ def get_extensions():
         # -O3	高优化 编译慢，不保留调试信息 对性能要求极高的场景
         # -Os	优化代码大小，不保留调试信息 对性能要求极高的场景
         "-O3",                   # O3优化（用户可根据需求切换注释的优化等级）
-        # "-DUSE_PCL_POINT_TYPE"     # 启用PCL点类型分支（用户按需注释关闭）
+        "-DUSE_PCL_POINT_TYPE",     # 启用PCL点类型分支（用户按需注释关闭）
         # "-DPRINT_DEBUG",       # 启用lidar调试日志打印（用户按需开启）
         "-DPRINT_MSG",            # 启用lidar运行日志打印（用户按需开启）
         # "-DPRINT_PARAMETER",     # 启用lidar参数配置打印（用户按需注释关闭）
@@ -100,47 +91,48 @@ def get_extensions():
         # "-DEXECUTIONLIB",          # include <execution>
         f"-I{rs_driver_include}",  # 引入RoboSense SDK driver头文件
     ]
+    
+    # ----------------------- PCL编译选项---------------------------------
+    if "-DUSE_PCL_POINT_TYPE" in extra_compile_args: 
+        extra_compile_args.append("-DEIGEN_MAX_ALIGN_BYTES=32") # 消除Eigen对齐警告
 
     extra_link_args = [
         "-lpthread",  # 多线程依赖
         "-lpcap",     # PCAP解析依赖（在线/离线点云读取必需，不可注释）
-        "-ltbb",      # 并行计算依赖
     ]
+    
+    if "-DEXECUTIONLIB" in extra_compile_args:
+        extra_link_args.append("-ltbb")   # 并行计算依赖
 
-    # -------------------------- PCL启用分支（通过环境变量USE_PCL控制，默认禁用）--------------------------
-    # 逻辑：用户设置USE_PCL=1/true/yes时启用PCL，否则禁用
-    use_pcl = os.getenv("USE_PCL", "0").strip().lower() in ("1", "true", "yes")
-    if use_pcl:
-        print(f"[INFO] 已启用PCL点云类型，正在检测PCL依赖...")
-        # 1. 模拟CMake的find_package(PCL REQUIRED)
-        pcl_cflags, pcl_libs = find_pcl_like_cmake()
-
-        # 2. 对应CMake的add_definitions(${PCL_DEFINITIONS})：添加PCL自带宏定义
-        extra_compile_args.extend(pcl_cflags)
-
-        # 3. 对应CMake的add_definitions(-DUSE_PCL_POINT_TYPE)：启用PCL点类型分支
-        extra_compile_args.append("-DUSE_PCL_POINT_TYPE")  # 仅定义宏（无需赋值，对应#ifdef判断，启用PCL时不可注释）
-
-        # 4. 对应CMake的add_definitions(-DEIGEN_MAX_ALIGN_BYTES=32)：消除Eigen对齐警告
-        extra_compile_args.append("-DEIGEN_MAX_ALIGN_BYTES=32")  # 启用PCL时建议保留，避免编译警告
-
-        # 5. 对应CMake的链接PCL库：添加PCL链接参数
-        extra_link_args.extend(pcl_libs)
-
-        print(f"[INFO] PCL依赖检测完成，已添加PCL编译/链接参数")
+    # -------------------------- 新增：注入PCL依赖 --------------------------
+    if "-DUSE_PCL_POINT_TYPE" in extra_compile_args:
+        pcl_include, pcl_compile, pcl_link = get_pcl_flags(
+            pcl_modules=["pcl_common", "pcl_io", "pcl_filters"]  # 按需添加其他模块
+        )
+        # 合并PCL参数到基础配置
+        include_dirs_base = [
+            rs_type_include,
+            rs_reader_include,
+            rs_driver_include,
+            *[p for p in os.getenv("PYTHONPATH", "").split(":") if p],
+        ]
+        include_dirs_base.extend(pcl_include)
+        extra_compile_args.extend(pcl_compile)
+        extra_link_args.extend(pcl_link)
     else:
-        print(f"[INFO] 默认禁用PCL点云类型，使用自定义点类型（无PCL依赖）")
+        # 不启用PCL时的基础头文件路径
+        include_dirs_base = [
+            rs_type_include,
+            rs_reader_include,
+            rs_driver_include,
+            *[p for p in os.getenv("PYTHONPATH", "").split(":") if p],
+        ]
 
     # -------------------------- 定义扩展模块（统一两种模式的输出）--------------------------
     ext = Extension(
         name=PROJECT_NAME,  # Python包名（import rs_lidar即可使用）
         sources=sources,
-        include_dirs=[
-            rs_type_include,       # 自定义点类型头文件路径
-            rs_reader_include,     # LiDAR读取器头文件路径
-            rs_driver_include,     # RoboSense SDK头文件路径
-            *[p for p in os.getenv("PYTHONPATH", "").split(":") if p],  # 兼容Python头文件路径
-        ],
+        include_dirs=include_dirs_base,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         language="c++",    # 指定C++编译器（默认C编译器，导致C++特性不可用，不可修改）
