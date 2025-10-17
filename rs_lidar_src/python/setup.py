@@ -92,11 +92,12 @@ def get_extensions():
         # -O3	高优化 编译慢，不保留调试信息 对性能要求极高的场景
         # -Os	优化代码大小，不保留调试信息 对性能要求极高的场景
         "-O3",                   # O3优化（用户可根据需求切换注释的优化等级）
-        # "-DPRINT_DEBUG",           # 启用lidar调试日志打印（用户按需开启）
-        "-DPRINT_MSG=ON",            # 启用lidar运行日志打印（用户按需开启）
-        "-DPRINT_PARAMETER=OFF",     # 启用lidar参数配置打印（用户按需注释关闭）
-        "-DRS_TIME_RECORD=ON",       # 代码耗时日志（用户按需注释关闭）
-        "-DEXECUTIONLIB=OFF",        # include <execution>
+        # "-DUSE_PCL_POINT_TYPE"     # 启用PCL点类型分支（用户按需注释关闭）
+        # "-DPRINT_DEBUG",       # 启用lidar调试日志打印（用户按需开启）
+        "-DPRINT_MSG",            # 启用lidar运行日志打印（用户按需开启）
+        # "-DPRINT_PARAMETER",     # 启用lidar参数配置打印（用户按需注释关闭）
+        "-DRS_TIME_RECORD",       # 代码耗时日志（用户按需注释关闭）
+        # "-DEXECUTIONLIB",          # include <execution>
         f"-I{rs_driver_include}",  # 引入RoboSense SDK driver头文件
     ]
 

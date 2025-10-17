@@ -37,8 +37,8 @@ endif()
 
 
 # ==================== 编译选项开关 ====================
-option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" OFF)
-option(EXECUTIONLIB "Include execution in .cpp" OFF)
+option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" ON)
+option(EXECUTIONLIB "Include execution in .cpp" ON)
 option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
 option(PRINT_DEBUG "cout debug to console" OFF)
 option(PRINT_MSG "cout brief message of every frames to console when 'getPointCloud' call" ON)
@@ -108,44 +108,33 @@ target_include_directories(rs_reader PUBLIC
 )
 target_link_libraries(rs_reader PUBLIC 
   ${rs_driver_LIBRARIES}
-  ${PCL_LIBRARIES}
   pthread  # 多线程库
-  # TBB::tbb # TBB库
 )
+
+if(USE_PCL_POINT_TYPE)
+  target_include_directories(rs_reader PUBLIC ${PCL_INCLUDE_DIRS})
+  target_link_libraries(rs_reader PUBLIC ${PCL_LIBRARIES})
+endif()
+
+if(EXECUTIONLIB STREQUAL ON)
+  target_link_libraries(rs_reader PRIVATE TBB::tbb)  # TBB库
+endif()
 
 # 编译demo_pcap可执行程序（回放模式）
 file(GLOB DEMO_PCAP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_pcap.cpp)
 add_executable(demo_pcap ${DEMO_PCAP_FILE})
-target_include_directories(demo_pcap PUBLIC 
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include
-)
 target_link_libraries(demo_pcap PUBLIC 
   rs_reader  # 依赖核心库rs_reader
-  ${rs_driver_LIBRARIES}
   pthread
 )
-if(USE_PCL_POINT_TYPE)
-  target_link_libraries(demo_pcap PUBLIC ${PCL_LIBRARIES})
-endif()
 
 # 编译demo_online可执行程序（在线模式）
 file(GLOB DEMO_ONLINE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_online.cpp)
 add_executable(demo_online ${DEMO_ONLINE_FILE})
-target_include_directories(demo_online PUBLIC 
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include
-)
 target_link_libraries(demo_online PUBLIC 
   rs_reader  # 依赖核心库rs_reader
-  ${rs_driver_LIBRARIES}
   pthread
 )
-if(USE_PCL_POINT_TYPE)
-  target_link_libraries(demo_online PUBLIC ${PCL_LIBRARIES})
-endif()
-
-
 
 # ==================== 安装规则 ====================
 # 1. 安装头文件
