@@ -17,17 +17,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
+
+# set(CMAKE_BUILD_TYPE Debug) # 默认Debug模式，可修改为Release
+
 # 构建类型配置（默认Release）
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
         "Choose the build type: Debug Release" FORCE)
 endif()
 
+
 # 根据构建类型设置编译选项
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Debug模式：无优化 + 完整调试信息
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
     message(STATUS "Build Mode: Debug (-O0 + 完整调试信息)")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
+    add_compile_options(-g -O0)
+    add_link_options(-g)
+
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     # Release模式：-O3极致优化，关闭调试信息
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
@@ -94,29 +101,29 @@ endif()
 
 # ==================== 全局包含目录 ====================
 include_directories(
-  ${rs_driver_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include  # rs_type头文件目录
 )
 
 if(USE_PCL_POINT_TYPE)
   include_directories(${PCL_INCLUDE_DIRS})
+  link_libraries(${PCL_LIBRARIES})
 endif()
-
 
 # ==================== 目标编译 ====================
 
-
-
-
-
-
-
-
+# 编译rs_viewer库（可视化库）
+file(GLOB RS_VIEWER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/src/*.cpp)
+add_library(rs_viewer STATIC ${RS_VIEWER_SRC})
+target_include_directories(rs_viewer PUBLIC 
+  ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
+)
 
 # 编译rs_reader库（核心激光雷达读取库）
 file(GLOB RS_READER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/src/*.cpp)
 add_library(rs_reader STATIC ${RS_READER_SRC})
 target_include_directories(rs_reader PUBLIC 
+  ${rs_driver_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
 )
@@ -124,11 +131,6 @@ target_link_libraries(rs_reader PUBLIC
   ${rs_driver_LIBRARIES}
   pthread  # 多线程库
 )
-
-if(USE_PCL_POINT_TYPE)
-  target_include_directories(rs_reader PUBLIC ${PCL_INCLUDE_DIRS})
-  target_link_libraries(rs_reader PUBLIC ${PCL_LIBRARIES})
-endif()
 
 if(EXECUTIONLIB STREQUAL ON)
   target_link_libraries(rs_reader PRIVATE TBB::tbb)  # TBB库
@@ -139,6 +141,7 @@ file(GLOB DEMO_PCAP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_pcap.cpp)
 add_executable(demo_pcap ${DEMO_PCAP_FILE})
 target_link_libraries(demo_pcap PUBLIC 
   rs_reader  # 依赖核心库rs_reader
+  rs_viewer  # 依赖可视化库rs_viewer
   pthread
 )
 
@@ -147,6 +150,7 @@ file(GLOB DEMO_ONLINE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_online.cpp)
 add_executable(demo_online ${DEMO_ONLINE_FILE})
 target_link_libraries(demo_online PUBLIC 
   rs_reader  # 依赖核心库rs_reader
+  rs_viewer  # 依赖可视化库rs_viewer
   pthread
 )
 
