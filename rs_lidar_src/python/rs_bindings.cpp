@@ -4,11 +4,12 @@
 #include <vector>
 #include "rs_type/rs_point_cloud_type.h"
 #include "rs_reader/LidarReader.h"
+#include "rs_viewer/LidarViewer.h"
 
 namespace py = pybind11;
 namespace rs_type = robosense::type;
 namespace rs_reader = robosense::reader;
-namespace rs_viewer = robosense::viewer;
+// namespace rs_viewer = robosense::viewer;
 
 /**
  * @brief 绑定PointXYZI结构体到Python
@@ -120,6 +121,26 @@ void bind_LidarReader(py::module& m) {
              "打印设备状态");
 }
 
+void bind_LidarViewer(py::module& m) {
+    // 注意：需先确保 PointCloudMsg 及相关类型已绑定（见步骤2）
+
+    py::class_<robosense::viewer::LidarViewer>(m, "LidarViewer")
+        .def(py::init<const std::string&>(),
+            py::arg("window_name") = "Lidar Viewer",
+            "构造函数，指定可视化窗口名称")
+        .def("init", &robosense::viewer::LidarViewer::init,
+            "初始化可视化器（创建窗口并配置参数），成功返回True，失败或已初始化返回False")
+        .def("start", &robosense::viewer::LidarViewer::start,
+            "启动可视化器（切换至运行状态），成功返回True，否则返回False")
+        .def("processAndShowPointCloud", &robosense::viewer::LidarViewer::processAndShowPointCloud,
+            py::arg("curr_msg"),
+            "处理并显示一帧点云数据（参数为PointCloudMsg的智能指针）")
+        .def("keepWindowAlive", &robosense::viewer::LidarViewer::keepWindowAlive,
+            "维持窗口响应（无点云输入时调用）")
+        .def("isWindowClosed", &robosense::viewer::LidarViewer::isWindowClosed,
+            "检查窗口是否被关闭，返回True表示已关闭");
+}
+
 /**
  * @brief Python模块入口
  * 定义rs_lidar模块，绑定核心数据类型和读取器类
@@ -129,6 +150,7 @@ PYBIND11_MODULE(rs_lidar, m) {
     bind_PointXYZI(m);
     bind_PointCloudMsg(m);
     bind_LidarReader(m);
+    bind_LidarViewer(m);
 
     // 异常转换：将C++异常映射为Python异常
     py::register_exception_translator([](std::exception_ptr p) {
