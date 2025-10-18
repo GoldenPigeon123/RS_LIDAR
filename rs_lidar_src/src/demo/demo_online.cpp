@@ -1,5 +1,5 @@
 #include "rs_reader/LidarReader.h"
-#include "rs_viewer/rs_viewer.h"
+#include "rs_viewer/LidarViewer.h"
 #include <iostream>
 #include <thread>
 #include <chrono>

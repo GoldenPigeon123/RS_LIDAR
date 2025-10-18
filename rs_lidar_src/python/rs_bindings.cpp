@@ -8,6 +8,7 @@
 namespace py = pybind11;
 namespace rs_type = robosense::type;
 namespace rs_reader = robosense::reader;
+namespace rs_viewer = robosense::viewer;
 
 /**
  * @brief 绑定PointXYZI结构体到Python
@@ -65,8 +66,7 @@ void bind_PointCloudMsg(py::module& m) {
                 ptr[4*i + 2] = p.z;
                 ptr[4*i + 3] = p.intensity;
             }
-
-            
+    
 #ifdef RS_TIME_RECORD
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();

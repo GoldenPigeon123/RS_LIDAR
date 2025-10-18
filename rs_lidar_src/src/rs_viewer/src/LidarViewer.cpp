@@ -1,4 +1,4 @@
-#include "rs_viewer/rs_viewer.h"
+#include "rs_viewer/LidarViewer.h"
 #include <pcl/console/print.h>
 #include <cmath>
 #include <algorithm>
