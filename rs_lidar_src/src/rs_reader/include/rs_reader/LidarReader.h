@@ -24,7 +24,7 @@ using robosense::type::CloudSyncQueue;       ///< 线程安全的点云队列（
  * @brief 默认欧式距离过滤阈值（单位：米）
  * @note 用于过滤超出该距离的点（x² + y² + z² > 阈值² 时被过滤）
  */
-#define DEFAULT_EUCLID_DISTANCE_EPSILON (5.0)
+#define DEFAULT_EUCLID_DISTANCE_EPSILON (10.0)
 
 namespace robosense::reader {
 
@@ -73,7 +73,12 @@ public:
    * @param distance 过滤阈值（单位：米），超出该距离的点将被过滤
    */
   void set_distance_epsilon(float distance){
-    distance_filter_=distance; 
+    if(distance > 0){
+      distance_filter_=distance; 
+      distance_filter_square_=distance*distance;
+    }else{
+      RS_WARNING << "Distance epsilon should be positive. Given: " << distance << RS_REND;
+    }
   }
 
   /**
@@ -166,6 +171,7 @@ private:
   std::atomic<bool> is_exception_callback_occurred_{false};  ///< 异常发生标志（原子变量）
   std::function<bool(float,float,float)> filter_func_;  ///< 自定义点云过滤函数（用户注册）
   std::atomic<float> distance_filter_=DEFAULT_EUCLID_DISTANCE_EPSILON;  ///< 欧式距离过滤阈值（原子变量）
+  std::atomic<float> distance_filter_square_=DEFAULT_EUCLID_DISTANCE_EPSILON*DEFAULT_EUCLID_DISTANCE_EPSILON;  ///< 欧式距离过滤阈值平方（原子变量）
   float temperature_{0.0f};              ///< 缓存的设备温度值
   
   CloudSyncQueue free_cloud_queue_;      ///< 空闲点云队列（用于缓存可复用的点云缓冲区）
@@ -180,7 +186,7 @@ private:
    * @return 点到原点的距离平方大于阈值平方时返回true（过滤该点），否则返回false（保留）
    */
   bool euclidianDistanceFilter(float x,float y,float z){
-    return x*x+y*y+z*z>distance_filter_*distance_filter_;
+    return x*x+y*y+z*z>distance_filter_square_;
   };
 
   /**

@@ -115,8 +115,13 @@ endif()
 file(GLOB RS_VIEWER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/src/*.cpp)
 add_library(rs_viewer STATIC ${RS_VIEWER_SRC})
 target_include_directories(rs_viewer PUBLIC 
+  ${rs_driver_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/include
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
+)
+target_link_libraries(rs_viewer PUBLIC 
+  ${rs_driver_LIBRARIES}
+  pthread  # 多线程库
 )
 
 # 编译rs_reader库（核心激光雷达读取库）

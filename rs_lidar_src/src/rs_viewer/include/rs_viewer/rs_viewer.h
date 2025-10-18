@@ -2,67 +2,91 @@
 #define RS_VIEWER_H_
 
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_color_handlers.h>
+#include <pcl/point_types.h>
 #include <memory>
 #include <string>
+#include <mutex>
 #include <functional>
-#include <mutex>  // 线程安全互斥锁
-#include "rs_type/rs_point_cloud_type.h"  // 你的点云类型定义
+#include "rs_type/rs_point_cloud_type.h"
 
 namespace robosense::viewer {
 
-using PointCloudMsg = type::PointCloudT<type::PointXYZI>;  // 简化类型别名
+using PointCloudMsg = type::PointCloudT<type::PointXYZI>;
 using PointCloudMsgPtr = std::shared_ptr<PointCloudMsg>;
 
+/**
+ * @enum ViewerState
+ * @brief 状态枚举，表示可视化器的当前运行状态。
+ */
+enum class ViewerState {
+    UNINITIALIZED,  ///< 未初始化状态
+    INITIALIZED,    ///< 初始化完成，窗口已创建
+    RUNNING         ///< 正在运行中
+};
+
+/**
+ * @class LidarViewer
+ * @brief LiDAR点云可视化类，基于PCL实现点云渲染与窗口管理。
+ *
+ * 支持强度着色显示、相机控制、回调扩展等功能。
+ */
 class LidarViewer {
 public:
     /**
-     * @brief 构造函数，初始化可视化窗口
-     * @param window_name 窗口标题
+     * @brief 构造函数
+     * @param window_name 可视化窗口名称，默认为 "Lidar Viewer"
      */
-    explicit LidarViewer(const std::string& window_name = "RoboSense Lidar Viewer");
+    explicit LidarViewer(const std::string& window_name = "Lidar Viewer");
 
     /**
-     * @brief 析构函数，释放资源
+     * @brief 析构函数
+     * @note 自动清理资源并关闭窗口
      */
     ~LidarViewer();
 
     /**
-     * @brief 注册点云回调函数（可选，用于后续处理）
-     * @param callback 回调函数，参数为可视化用的点云副本
+     * @brief 初始化可视化器（创建窗口并配置参数）
+     * @return 成功返回 true，失败或已初始化返回 false
      */
-    void registerPointCloudCallback(std::function<void(PointCloudMsgPtr)> callback);
+    bool init();
 
     /**
-     * @brief 处理并显示点云（核心接口）
-     * @param curr_msg 原始点云消息（会被深复制后再处理）
+     * @brief 启动可视化器（切换至运行状态）
+     * @return 成功返回 true，否则返回 false
+     */
+    bool start();
+
+    /**
+     * @brief 处理并显示一帧点云数据
+     * @param curr_msg 当前点云消息指针
      */
     void processAndShowPointCloud(PointCloudMsgPtr curr_msg);
 
     /**
-     * @brief 无新点云时保持窗口响应
+     * @brief 维持窗口响应（无点云输入时调用）
      */
     void keepWindowAlive();
 
     /**
-     * @brief 判断窗口是否已关闭
-     * @return 窗口关闭返回true，否则false
+     * @brief 检查窗口是否被用户关闭
+     * @return 若窗口已关闭返回 true，否则返回 false
      */
     bool isWindowClosed() const;
 
-private:
     /**
-     * @brief 初始化可视化器（内部调用）
+     * @brief 注册点云处理回调函数
+     * @param callback 回调函数对象，接收 PointCloudMsgPtr 类型参数
      */
-    void initViewer();
+    void registerPointCloudCallback(std::function<void(PointCloudMsgPtr)> callback);
 
-    std::string window_name_;  ///< 窗口标题
-    std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;  ///< PCL可视化器
-    std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> pcl_cloud_;  ///< PCL格式点云（用于可视化）
-    std::shared_ptr<pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI>> color_handler_;  ///< 强度着色器
-    PointCloudMsgPtr visualized_cloud_;  ///< 可视化用的点云副本（深复制）
-    std::function<void(PointCloudMsgPtr)> cloud_callback_;  ///< 用户注册的回调函数
-    mutable std::mutex viewer_mutex_;  ///< 保护可视化器的线程安全锁（mutable允许const函数使用）
+private:
+    std::string window_name_;  ///< 窗口名称
+    std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;  ///< PCL可视化器实例
+    std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> pcl_cloud_; ///< 内部PCL点云容器
+    std::shared_ptr<pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI>> color_handler_;  ///< 强度着色处理器
+    ViewerState state_;                                          ///< 当前状态
+    mutable std::mutex mutex_;                                   ///< 线程安全互斥锁
+    std::function<void(PointCloudMsgPtr)> cloud_callback_;       ///< 用户注册的回调函数
 };
 
 }  // namespace robosense::viewer
