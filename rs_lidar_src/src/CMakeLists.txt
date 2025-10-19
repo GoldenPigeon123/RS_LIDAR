@@ -107,10 +107,6 @@ include_directories(
 if(USE_PCL_POINT_TYPE)
   include_directories(${PCL_INCLUDE_DIRS})
   link_libraries(${PCL_LIBRARIES})
-  message("============打印==============")
-  message("PCL_INCLUDE_DIRS: ${PCL_INCLUDE_DIRS}")
-  message("PCL_LIBRARIES: ${PCL_LIBRARIES}")
-  message("============打印====+=========")
 endif()
 
 # ==================== 目标编译 ====================
@@ -163,7 +159,6 @@ target_link_libraries(demo_online PUBLIC
   pthread
 )
 
-
 # ==================== 安装规则 ====================
 # 1. 安装头文件
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include/
@@ -206,4 +201,3 @@ configure_file(
 install(FILES ${CMAKE_BINARY_DIR}/rs_readerConfigVersion.cmake
         DESTINATION lib/cmake/rs_reader
         )
-
