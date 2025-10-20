@@ -13,9 +13,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 # 输出目录配置
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 
 # set(CMAKE_BUILD_TYPE Debug) # 默认Debug模式，可修改为Release
@@ -44,6 +44,7 @@ endif()
 
 
 # ==================== 编译选项开关 ====================
+option(BUILD_PYTHON_PACKAGES "Build Python packages" ON)
 option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" ON)
 option(EXECUTIONLIB "Include execution in .cpp" ON)
 option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
@@ -159,45 +160,40 @@ target_link_libraries(demo_online PUBLIC
   pthread
 )
 
-# ==================== 安装规则 ====================
-# 1. 安装头文件
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include/
-        DESTINATION include/rs_reader
-        FILES_MATCHING PATTERN "*.h"
-        )
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include/
-        DESTINATION include/rs_reader/rs_type
-        FILES_MATCHING PATTERN "*.h"
-        )
 
-# 2. 安装静态库
-install(TARGETS rs_reader
-        ARCHIVE DESTINATION lib
-        )
+# ==================== Python绑定配置 ====================
+if(BUILD_PYTHON_PACKAGES STREQUAL ON)
+  message(STATUS "启用Python绑定构建")
 
-# 3. 生成CMake配置文件
-# 创建目标导出
-export(TARGETS rs_reader
-       FILE rs_readerTargets.cmake
-       NAMESPACE rs_reader::
-       )
+  find_package(pybind11 REQUIRED)
+  if(NOT pybind11_FOUND)
+    message(FATAL_ERROR "pybind11 not found. 请安装pybind11: pip install pybind11")
+  endif()
 
-# 生成rs_readerConfig.cmake
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/rs_readerConfig.cmake.in
-    ${CMAKE_BINARY_DIR}/rs_readerConfig.cmake
-    @ONLY
-)
-install(FILES ${CMAKE_BINARY_DIR}/rs_readerConfig.cmake
-        DESTINATION lib/cmake/rs_reader
-        )
+  file(GLOB RS_BINDINGS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_bind/src/rs_bindings.cpp)
 
-# 生成版本文件
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/rs_readerConfigVersion.cmake.in
-    ${CMAKE_BINARY_DIR}/rs_readerConfigVersion.cmake
-    @ONLY
-)
-install(FILES ${CMAKE_BINARY_DIR}/rs_readerConfigVersion.cmake
-        DESTINATION lib/cmake/rs_reader
-        )
+  pybind11_add_module(
+    rs_lidar  
+    SHARED
+    ${RS_BINDINGS_SRC}
+  )
+
+  target_link_libraries(
+    rs_lidar PRIVATE
+    pybind11::module
+    rs_reader
+    rs_viewer
+    pthread
+  )
+  
+  set_target_properties(
+    rs_lidar 
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    PREFIX ""
+  )
+
+  message(STATUS "Python绑定模块 'rs_lidar' 配置完成")
+endif()
