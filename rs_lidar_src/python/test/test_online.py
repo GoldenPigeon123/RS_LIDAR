@@ -48,7 +48,6 @@ def main():
         print(f"程序运行出错: {e}")
     finally:
         # 确保资源释放
-        
         print("正在关闭程序...")
         reader.stop()
             
