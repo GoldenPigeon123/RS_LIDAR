@@ -6,7 +6,7 @@
 #include <chrono>
 #include <thread>
 
-#ifdef DEXECUTIONLIB
+#ifdef EXECUTIONLIB
 #include <execution>  // 并行执行支持（可选编译宏）
 #endif
 
@@ -14,7 +14,7 @@
  * @brief 同步队列初始大小
  * @note 预分配100个点云缓冲区，减少运行时动态内存分配开销
  */
-#define SYNC_QUEUE_INIT_SIZE 100
+#define SYNC_QUEUE_INIT_SIZE 500
 
 namespace robosense::reader {
 namespace fs = std::filesystem;  // 文件系统操作命名空间别名
@@ -196,9 +196,9 @@ void LidarReader::driverReturnPointCloudToCallerCallback(PointCloudMsgPtr msg) {
 #endif
 
     // 过滤无效点和需过滤的点
-    // 若启用DEXECUTIONLIB，使用并行算法加速过滤
+    // 若启用EXECUTIONLIB，使用并行算法加速过滤
     auto it = std::remove_if(
-#ifdef DEXECUTIONLIB
+#ifdef EXECUTIONLIB
         std::execution::par,  // 并行执行（多线程加速）
 #endif
         msg->points.begin(), msg->points.end(),

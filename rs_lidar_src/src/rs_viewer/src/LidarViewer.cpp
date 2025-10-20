@@ -13,6 +13,7 @@ LidarViewer::LidarViewer(const std::string& window_name)
       cloud_callback_(nullptr) {
     // 禁用PCL/VTK日志输出，避免干扰主程序
     pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
+    RS_INFO << "LidarReader::Constructor - Waiting init then start..." << RS_REND;
 }
 
 LidarViewer::~LidarViewer() {
@@ -20,12 +21,12 @@ LidarViewer::~LidarViewer() {
     if (viewer_) {
         viewer_->removeAllPointClouds();
         viewer_->removeAllCoordinateSystems();
-        viewer_->close();
         viewer_.reset();
     }
     pcl_cloud_.reset();
     color_handler_.reset();
     state_ = ViewerState::UNINITIALIZED;
+    RS_INFO << "LidarReader::Destructor - Close ..." << RS_REND;
 }
 
 bool LidarViewer::init() {
