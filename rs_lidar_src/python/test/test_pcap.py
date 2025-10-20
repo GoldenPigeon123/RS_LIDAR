@@ -11,10 +11,6 @@ def signal_handler(signum, frame):
     print("\n正在优雅退出...")
     if reader:
         reader.stop()
-        reader.deinit()  # 假设 rs_lidar 提供 deinit 方法释放资源
-    if viewer:
-        viewer.stop()
-        viewer.deinit()
     print("资源已释放，程序退出。")
     sys.exit(0)
 
