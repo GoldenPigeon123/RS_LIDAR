@@ -88,8 +88,7 @@ void LidarViewer::processAndShowPointCloud(PointCloudMsgPtr curr_msg) {
         return;
     }
 
-    // 准备用于回调的点云副本（如有需要）
-    PointCloudMsgPtr local_cloud = cloud_callback_ ? std::make_shared<PointCloudMsg>(*curr_msg) : curr_msg;
+    PointCloudMsgPtr local_cloud = curr_msg;
 
     // 转换为PCL兼容点云（使用Eigen对齐分配器）
     using PCLPointVec = std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI>>;
@@ -114,7 +113,7 @@ void LidarViewer::processAndShowPointCloud(PointCloudMsgPtr curr_msg) {
         pcl_cloud_->height = 1;
 
         viewer_->updatePointCloud<pcl::PointXYZI>(pcl_cloud_, *color_handler_, "rs_cloud");
-        viewer_->spinOnce(10);
+        viewer_->spinOnce(1);
     }
 
     // 执行用户回调（在锁外执行，避免阻塞渲染）

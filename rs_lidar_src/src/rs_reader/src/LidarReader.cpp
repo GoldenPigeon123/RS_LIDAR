@@ -14,7 +14,8 @@
  * @brief 同步队列初始大小
  * @note 预分配100个点云缓冲区，减少运行时动态内存分配开销
  */
-#define SYNC_QUEUE_INIT_SIZE 500
+#define SYNC_QUEUE_INIT_SIZE 10000
+#define SYNC_QUEUE_MAX_SIZE 100000
 
 namespace robosense::reader {
 namespace fs = std::filesystem;  // 文件系统操作命名空间别名
@@ -275,7 +276,7 @@ PointCloudMsgPtr LidarReader::getPointCloud(unsigned int usec) {
  * @note 清空点数据但保留缓冲区，实现内存复用
  */
 void LidarReader::freePointCloud(const PointCloudMsgPtr& msg) {
-    if (msg) {
+    if (msg && free_cloud_queue_.size()< SYNC_QUEUE_MAX_SIZE) {
         msg->points.clear();  // 清空点数据
         free_cloud_queue_.push(msg);  // 放回空闲队列
     }

@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 # -------------------------- 项目基础信息配置 --------------------------
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 AUTHOR = "Zhejiang University of Finance and Economics - Point Cloud Team: Zhang Zhongqian, Li Huaiyuan, Cao Yiyun 浙江财经大学信息技术与人工智能学院点云组:张忠谦,李怀苑,曹宜云"
 AUTHOR_EMAIL = "2789632062@qq.com"
 PROJECT_NAME = "rs_lidar"

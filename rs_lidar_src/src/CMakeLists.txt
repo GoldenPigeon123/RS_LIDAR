@@ -46,7 +46,7 @@ endif()
 # ==================== 编译选项开关 ====================
 option(BUILD_PYTHON_PACKAGES "Build Python packages" ON)
 option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" ON)
-option(EXECUTIONLIB "Include execution in .cpp" ON)
+option(EXECUTIONLIB "Include execution in .cpp" OFF)
 option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
 option(PRINT_DEBUG "cout debug to console" OFF)
 option(PRINT_MSG "cout brief message of every frames to console when 'getPointCloud' call" ON)
