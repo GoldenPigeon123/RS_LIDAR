@@ -25,7 +25,7 @@ def main():
         reader = rs_lidar.LidarReader("RSE1", "PCAP_FILE", 6699, 7788)
         reader.set_pcap_path("./../../../../record/01.pcap")
         # reader.set_pcap_path("./../../../data/outdoor.pcap")
-        reader.set_distance_epsilon(10.0)
+        reader.set_distance_epsilon(30.0)
         reader.init()
         reader.start()
 
@@ -50,7 +50,6 @@ def main():
         print(f"程序运行出错: {e}")
     finally:
         # 确保资源释放
-        
         print("正在关闭程序...")
         reader.stop()
             
