@@ -113,6 +113,11 @@ void LidarViewer::processAndShowPointCloud(PointCloudMsgPtr curr_msg) {
         pcl_cloud_->height = 1;
 
         viewer_->updatePointCloud<pcl::PointXYZI>(pcl_cloud_, *color_handler_, "rs_cloud");
+#ifdef RS_TIME_RECORD
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+RS_DEBUG << "viewer render time: " << duration << "us" << RS_REND;
+#endif
         viewer_->spinOnce(1);
     }
 
@@ -121,11 +126,6 @@ void LidarViewer::processAndShowPointCloud(PointCloudMsgPtr curr_msg) {
         cloud_callback_(local_cloud);
     }
 
-#ifdef RS_TIME_RECORD
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
-    RS_DEBUG << "viewer render time: " << duration << "us" << RS_REND;
-#endif
 }
 
 void LidarViewer::keepWindowAlive() {
