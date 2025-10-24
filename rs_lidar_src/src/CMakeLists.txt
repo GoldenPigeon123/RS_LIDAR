@@ -45,6 +45,7 @@ endif()
 
 # ==================== 编译选项开关 ====================
 option(BUILD_PYTHON_PACKAGES "Build Python packages" ON)
+option(COMPILE_DEMO "Compile demo programs" ON)
 option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" ON)
 option(EXECUTIONLIB "Include execution in .cpp" OFF)
 option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
@@ -142,23 +143,12 @@ if(EXECUTIONLIB STREQUAL ON)
   target_link_libraries(rs_reader PRIVATE TBB::tbb)  # TBB库
 endif()
 
-# 编译demo_pcap可执行程序（回放模式）
-file(GLOB DEMO_PCAP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_pcap.cpp)
-add_executable(demo_pcap ${DEMO_PCAP_FILE})
-target_link_libraries(demo_pcap PUBLIC 
-  rs_reader  # 依赖核心库rs_reader
-  rs_viewer  # 依赖可视化库rs_viewer
-  pthread
-)
-
-# 编译demo_online可执行程序（在线模式）
-file(GLOB DEMO_ONLINE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/demo/demo_online.cpp)
-add_executable(demo_online ${DEMO_ONLINE_FILE})
-target_link_libraries(demo_online PUBLIC 
-  rs_reader  # 依赖核心库rs_reader
-  rs_viewer  # 依赖可视化库rs_viewer
-  pthread
-)
+# ==================== Demo程序编译 ====================
+if(COMPILE_DEMO STREQUAL ON)
+  message(STATUS "启用Demo程序构建")
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/demo)
+  message(STATUS "Demo程序构建完成")
+endif()
 
 
 # ==================== Python绑定配置 ====================

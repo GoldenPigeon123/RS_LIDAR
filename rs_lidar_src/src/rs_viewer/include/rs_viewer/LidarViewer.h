@@ -24,6 +24,12 @@ enum class ViewerState {
     RUNNING         ///< 正在运行中
 };
 
+
+enum class RenderMode{
+    INTENSTITY,
+    RGB
+};
+
 /**
  * @class LidarViewer
  * @brief LiDAR点云可视化类，基于PCL实现点云渲染与窗口管理。
