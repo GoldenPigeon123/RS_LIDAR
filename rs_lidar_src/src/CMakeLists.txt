@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(rs_lidar VERSION 0.3. LANGUAGES CXX)
+project(rs_lidar VERSION 0.3.5 LANGUAGES CXX)
 
 # ==================== 基础编译配置 ====================
 # 编译标准设置
@@ -100,48 +100,24 @@ if(NOT rs_driver_FOUND)
   message(FATAL_ERROR "rs_driver not found. Please install it first.")
 endif()
 
+if(USE_PCL_POINT_TYPE)
+  include_directories(${PCL_INCLUDE_DIRS})
+  link_libraries(${PCL_LIBRARIES})
+endif()
+
 
 # ==================== 全局包含目录 ====================
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include  # rs_type头文件目录
 )
 
-if(USE_PCL_POINT_TYPE)
-  include_directories(${PCL_INCLUDE_DIRS})
-  link_libraries(${PCL_LIBRARIES})
-endif()
-
 # ==================== 目标编译 ====================
 
 # 编译rs_viewer库（可视化库）
-file(GLOB RS_VIEWER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/src/*.cpp)
-add_library(rs_viewer STATIC ${RS_VIEWER_SRC})
-target_include_directories(rs_viewer PUBLIC 
-  ${rs_driver_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
-)
-target_link_libraries(rs_viewer PUBLIC 
-  ${rs_driver_LIBRARIES}
-  pthread  # 多线程库
-)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer)
 
 # 编译rs_reader库（核心激光雷达读取库）
-file(GLOB RS_READER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/src/*.cpp)
-add_library(rs_reader STATIC ${RS_READER_SRC})
-target_include_directories(rs_reader PUBLIC 
-  ${rs_driver_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_reader/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include
-)
-target_link_libraries(rs_reader PUBLIC 
-  ${rs_driver_LIBRARIES}
-  pthread  # 多线程库
-)
-
-if(EXECUTIONLIB STREQUAL ON)
-  target_link_libraries(rs_reader PRIVATE TBB::tbb)  # TBB库
-endif()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_reader)
 
 # ==================== Demo程序编译 ====================
 if(COMPILE_DEMO STREQUAL ON)
