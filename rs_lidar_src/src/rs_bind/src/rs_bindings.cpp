@@ -3,9 +3,9 @@
 #include <pybind11/numpy.h>
 #include <vector>
 
-#include "rs_bind/rs_bind_rs_type.h"
-#include "rs_bind/rs_bind_rs_reader.h"
-#include "rs_bind/rs_viewer.h"
+#include "rs_bind/bind_rs_type.h"
+#include "rs_bind/bind_rs_reader.h"
+#include "rs_bind/bind_rs_viewer.h"
 
 namespace py = pybind11;
 
