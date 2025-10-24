@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(rs_lidar VERSION 1.0.0 LANGUAGES CXX)
+project(rs_lidar VERSION 0.3. LANGUAGES CXX)
 
 # ==================== 基础编译配置 ====================
 # 编译标准设置
