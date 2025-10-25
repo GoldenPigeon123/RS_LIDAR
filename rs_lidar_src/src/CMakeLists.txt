@@ -50,8 +50,8 @@ option(USE_PCL_POINT_TYPE "Use PCL point cloud type instead of custom type" ON)
 option(EXECUTIONLIB "Include execution in .cpp" OFF)
 option(PRINT_PARAMETER "cout parameters of lidar to console" OFF)
 option(PRINT_DEBUG "cout debug to console" OFF)
-option(PRINT_MSG "cout brief message of every frames to console when 'getPointCloud' call" ON)
-option(RS_TIME_RECORD "cout time record to console" ON)
+option(PRINT_MSG "cout brief message of every frames to console when 'getPointCloud' call" OFF)
+option(RS_TIME_RECORD "cout time record to console" OFF)
 
 # PCL相关配置
 if(USE_PCL_POINT_TYPE STREQUAL ON)
