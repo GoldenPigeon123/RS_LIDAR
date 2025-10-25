@@ -16,5 +16,6 @@ void bind_LidarViewer(py::module& m) {
         .def("setPointColor",&rs_viewer::LidarViewer::setPointColor,py::arg("indices"),py::arg("color"))
         .def("show", &rs_viewer::LidarViewer::show)
         .def("keepWindowAlive", &rs_viewer::LidarViewer::keepWindowAlive)
-        .def("isWindowClosed", &rs_viewer::LidarViewer::isWindowClosed);
+        .def("isWindowClosed", &rs_viewer::LidarViewer::isWindowClosed)
+        .def("stop", &rs_viewer::LidarViewer::stop);
 }

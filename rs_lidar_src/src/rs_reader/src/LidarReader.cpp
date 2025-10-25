@@ -294,28 +294,3 @@ float LidarReader::getTemperature() {
         throw std::runtime_error("Temperature not available");
     }
 }
-
-/**
- * @brief 打印驱动参数配置
- */
-void LidarReader::printDriverParam() {
-    driver_param_.print();
-};
-
-/**
- * @brief 打印设备信息（型号、序列号等）
- */
-void LidarReader::printDeviceInfo() {
-    driver_.getDeviceInfo(device_info_);
-    device_info_.print();
-};
-
-/**
- * @brief 打印设备状态（运行状态、错误码等）
- */
-void LidarReader::printDeviceStatus() {
-    driver_.getDeviceStatus(device_status_);
-    device_status_.print();
-};
-
-}  // namespace robosense::reader

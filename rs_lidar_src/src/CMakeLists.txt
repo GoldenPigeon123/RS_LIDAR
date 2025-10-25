@@ -94,7 +94,7 @@ if(RS_TIME_RECORD STREQUAL ON)
 endif()
 
 
-# ==================== 依赖库查找 ====================
+# ==================== 依赖库查找 ======================
 find_package(rs_driver REQUIRED)
 if(NOT rs_driver_FOUND)
   message(FATAL_ERROR "rs_driver not found. Please install it first.")
@@ -111,7 +111,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/rs_type/include  # rs_type头文件目录
 )
 
-# ==================== 目标编译 ====================
+# ==================== 目标编译 ========================
 
 # 编译rs_viewer库（可视化库）
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_viewer)
@@ -126,7 +126,7 @@ if(COMPILE_DEMO STREQUAL ON)
 endif()
 
 
-# ==================== Python绑定配置 ====================
+# ==================== Python绑定配置 ==================
 if(BUILD_PYTHON_PACKAGES STREQUAL ON)
   message(STATUS "启用Python绑定构建")
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_bind)

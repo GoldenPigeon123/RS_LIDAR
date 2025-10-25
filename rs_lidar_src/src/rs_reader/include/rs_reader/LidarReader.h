@@ -139,19 +139,53 @@ public:
    * @brief 打印驱动当前配置参数
    * @details 包括端口号、雷达型号、工作模式等配置信息
    */
-  void printDriverParam();
+  void printDriverParam(){
+    driver_param_.print();
+  };
+
+
+  /**
+   *  @brief 获取驱动配置参数
+   * @return 激光雷达驱动参数结构体引用
+   */
+  robosense::lidar::RSDriverParam getDriverParam() const {
+    return driver_param_;
+  }
+
 
   /**
    * @brief 打印激光雷达设备信息
    * @details 包括设备型号、序列号、固件版本等硬件信息
    */
-  void printDeviceInfo();
+  void printDeviceInfo(){
+    driver_.getDeviceInfo(device_info_);
+    device_info_.print();
+  };
+
+  /**
+   * @brief 获取激光雷达设备信息
+   * @return 激光雷达设备信息结构体引用
+   */
+  robosense::lidar::DeviceInfo getDeviceInfo() const {
+    return device_info_;
+  }
 
   /**
    * @brief 打印激光雷达当前运行状态
    * @details 包括运行状态码、错误信息（如有）等
    */
-  void printDeviceStatus();
+  void printDeviceStatus(){
+    driver_.getDeviceStatus(device_status_);
+    device_status_.print();
+  };
+
+  /**
+   * @brief 获取激光雷达当前运行状态
+   * @return 激光雷达设备状态结构体引用
+   */
+  robosense::lidar::DeviceStatus getDeviceStatus() const {
+    return device_status_;
+  }
 
 private:
   robosense::lidar::LidarType lidar_type_;  ///< 激光雷达类型（枚举值，由型号字符串转换而来）
