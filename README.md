@@ -1,11 +1,32 @@
 ##  版权声明
-
+![RobosenseLogo](./doc/img/RobosenseLogo.png)
 rs_driver_update为Robosense官方提供的driverAPI，本仓库中的代码为浙江财经大学机9106实验室点云组基于[rs_driver](https://github.com/RoboSense-LiDAR/rs_driver/releases)的二次开发。
 
 本产品/软件集成了 RoboSense LiDAR SDK。该软件由 RoboSense 提供，并遵循 BSD 3-Clause 许可证。
 
-## 构建
+## 其他依赖
 
-### sh脚本构建安装
+### PCL1.15+VTK9.1
 
-### 命令行构建
+#### 请指定一个目录进行安装
+'''bash
+git clone https://github.com/PointCloudLibrary/pcl.git
+cd pcl
+mkdir build && cd build
+cmake ..-DCMAKE_BUILD_TYPE=Release .. && make -j4
+'''
+
+#### VTK9.1
+
+```bash
+sudo apt-get install libvtk9-dev
+```
+
+## 本项目编译
+
+阅读顺序
+1.[compile.md](./doc/compile.md)
+
+2.[usage.md](./doc/usage.md)
+
+3.[addition.md](./doc/addition.md)
