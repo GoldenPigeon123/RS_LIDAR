@@ -4,7 +4,10 @@ rs_driver_update为Robosense官方提供的driverAPI，本仓库中的代码为�
 
 本产品/软件集成了 RoboSense LiDAR SDK。该软件由 RoboSense 提供，并遵循 BSD 3-Clause 许可证。
 
-## 其他依赖
+## 相关依赖
+
+### Python3.10
+编译安装包的时候请采用Python3.10版本，其他版本可能会出现编译错误。
 
 ### PCL1.15+VTK9.1
 
@@ -22,7 +25,7 @@ cmake ..-DCMAKE_BUILD_TYPE=Release .. && make -j4
 sudo apt-get install libvtk9-dev
 ```
 
-## 本项目编译
+## 本项目
 
 阅读顺序
 1.[compile.md](./doc/compile.md)

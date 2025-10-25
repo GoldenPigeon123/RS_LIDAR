@@ -6,7 +6,7 @@ image: true  # 强制将所有图片转换为 Base64 嵌入
 
 ### 源码文件夹
 1. **rs_driver_update**
-2. **rs_lidar_pyhton**
+2. **rs_lidar_src**
 
 ### 先决条件
 
