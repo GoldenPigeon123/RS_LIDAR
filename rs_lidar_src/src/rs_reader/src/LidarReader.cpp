@@ -294,3 +294,5 @@ float LidarReader::getTemperature() {
         throw std::runtime_error("Temperature not available");
     }
 }
+
+}  // namespace robosense::reader
