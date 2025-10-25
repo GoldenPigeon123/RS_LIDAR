@@ -16,12 +16,13 @@ rs_driver_update为Robosense官方提供的driverAPI，本仓库中的代码为�
 
 请你选择特定的目录进行安装
 
-'''bash
+
+```bash
 git clone https://github.com/PointCloudLibrary/pcl.git
 cd pcl
 mkdir build && cd build
 cmake ..-DCMAKE_BUILD_TYPE=Release .. && make -j4
-'''
+```
 
 #### VTK9.1
 
