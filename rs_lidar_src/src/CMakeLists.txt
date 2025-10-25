@@ -123,15 +123,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_reader)
 if(COMPILE_DEMO STREQUAL ON)
   message(STATUS "启用Demo程序构建")
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/demo)
-  message(STATUS "Demo程序构建完成")
 endif()
 
 
 # ==================== Python绑定配置 ====================
 if(BUILD_PYTHON_PACKAGES STREQUAL ON)
   message(STATUS "启用Python绑定构建")
-
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rs_bind)
-
-  message(STATUS "Python绑定模块 'rs_lidar' 配置完成")
 endif()
