@@ -23,12 +23,13 @@ def main():
     try:
         # 初始化 LidarReader
         reader = rs_lidar.LidarReader("RSE1", "ONLINE_LIDAR", 6699, 7788)
-        reader.set_distance_epsilon(10.0)
+        reader.set_distance_epsilon(12.0)
         reader.init()
         reader.start()
 
         # 初始化 LidarViewer
         viewer = rs_lidar.LidarViewer("RSE1 Viewer")
+        viewer.setRenderMode("RGB")
         viewer.init()
         viewer.start()
 
@@ -38,7 +39,8 @@ def main():
         while reader.isDriverRunning():
             cloud = reader.getPointCloud()
             if cloud:
-                viewer.processAndShowPointCloud(cloud)
+                viewer.addPointCloud(cloud)
+                viewer.show()
                 reader.freePointCloud(cloud)
             else:
                 print("未获取到点云数据，准备退出...")

@@ -1,6 +1,7 @@
 import rs_lidar
 import signal
 import sys
+import numpy as np
 
 # 全局变量用于资源管理
 reader = None
@@ -25,22 +26,31 @@ def main():
         reader = rs_lidar.LidarReader("RSE1", "PCAP_FILE", 6699, 7788)
         reader.set_pcap_path("./../../../../record/01.pcap")
         # reader.set_pcap_path("./../../../data/outdoor.pcap")
-        reader.set_distance_epsilon(15.0)
+        reader.set_distance_epsilon(12.0)
         reader.init()
         reader.start()
 
         # 初始化 LidarViewer
         viewer = rs_lidar.LidarViewer("RSE1 Viewer")
+        viewer.setRenderMode("RGB")
         viewer.init()
         viewer.start()
 
         print("开始播放点云数据，按 Ctrl+C 退出...")
 
+
+        set_color="red"
         # 主循环：持续获取并显示点云
         while reader.isDriverRunning():
             cloud = reader.getPointCloud()
+            cloud_np=cloud.to_numpy()
+            z_values=cloud_np[:,2]
+            mask=z_values<-1
+            indices = np.where(mask)[0]
             if cloud:
-                viewer.processAndShowPointCloud(cloud)
+                viewer.addPointCloud(cloud)
+                viewer.setPointColor(indices, set_color)
+                viewer.show()
                 reader.freePointCloud(cloud)
             else:
                 print("未获取到点云数据，准备退出...")
