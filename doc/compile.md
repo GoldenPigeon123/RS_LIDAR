@@ -19,7 +19,7 @@ sudo apt-get install libpcap-dev
 libeigen3-dev libboost-dev libpcl-dev
 ```
 6. **rs_lidar_src**依赖：
-  - 在*rs_lidar_src/python*目录下执行
+  - 在*rs_lidar_src/python/*目录下执行
 ```bash
 pip install -r ./python/requirements.txt 
 ```
@@ -59,9 +59,9 @@ option(RS_TIME_RECORD "cout time record to console" OFF)
 
 - *cpp*目录下执行
 ```bash
-chmod +x cmake_make.sh
-chmod +x clean_build.sh
-chmod +x run_demo_pcap.sh
+chmod +x cmake_make.sh  #编译
+chmod +x clean_build.sh #清除旧构建
+chmod +x run_demo_pcap.sh #运行demo
 
 ./cmake_make.sh
 ./run_demo_pcap.sh
@@ -70,10 +70,10 @@ chmod +x run_demo_pcap.sh
 - *python*目录下执行
 
 ```bash
-chmod +x bdist_wheel.sh
-chmod +x clean_build.sh
-chmod +x pip_install_wheel.sh
-chmod +x run_demo_pcap.sh
+chmod +x bdist_wheel.sh #编译
+chmod +x clean_build.sh #清除旧构建
+chmod +x pip_install_wheel.sh #安装
+chmod +x run_demo_pcap.sh #运行demo
 
 ./bdist_wheel.sh
 ./pip_install_wheel.sh
