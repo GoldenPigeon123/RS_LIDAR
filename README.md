@@ -6,6 +6,8 @@
 本产品/软件集成了 RoboSense LiDAR SDK。该软件由 RoboSense 提供，并遵循 BSD 3-Clause 许可证。
 
 <img src="/doc/video/demo.gif" alt="点云分割演示" width="100%" />
+
+
 ## 相关依赖
 
 ### Python3.10
