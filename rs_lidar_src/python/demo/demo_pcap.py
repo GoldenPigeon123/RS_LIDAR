@@ -24,8 +24,9 @@ def main():
     try:
         # 初始化 LidarReader
         reader = rs_lidar.LidarReader("RSE1", "PCAP_FILE", 6699, 7788)
-        reader.set_pcap_path("./../../../../record/01.pcap")
+        # reader.set_pcap_path("./../../../../record/01.pcap")
         # reader.set_pcap_path("./../../../data/outdoor.pcap")
+        reader.set_pcap_path("./../../../data/indoor.pcap")
         reader.set_distance_epsilon(12.0)
         reader.init()
         reader.start()
@@ -43,11 +44,11 @@ def main():
         # 主循环：持续获取并显示点云
         while reader.isDriverRunning():
             cloud = reader.getPointCloud()
-            cloud_np=cloud.to_numpy()
-            z_values=cloud_np[:,2]
-            mask=z_values<-1
-            indices = np.where(mask)[0]
             if cloud:
+                cloud_np=cloud.to_numpy()
+                z_values=cloud_np[:,2]
+                mask=z_values<-1
+                indices = np.where(mask)[0]
                 viewer.addPointCloud(cloud)
                 viewer.setPointColor(indices, set_color)
                 viewer.show()
