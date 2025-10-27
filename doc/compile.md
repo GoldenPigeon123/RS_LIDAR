@@ -19,7 +19,7 @@ sudo apt-get install libpcap-dev
 libeigen3-dev libboost-dev libpcl-dev
 ```
 6. **rs_lidar_src**依赖：
-  - 在*RS_LIDAR_Python*目录下执行
+  - 在*rs_lidar_src/python*目录下执行
 ```bash
 pip install -r ./python/requirements.txt 
 ```
