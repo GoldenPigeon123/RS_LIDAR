@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 # -------------------------- 项目基础信息配置 --------------------------
-__version__ = "0.3.6"
+__version__ = "0.3.7"
 AUTHOR = "Zhejiang University of Finance and Economics - Point Cloud Team: Zhang Zhongqian, Li Huaiyuan, Cao Yiyun 浙江财经大学信息技术与人工智能学院点云组:张忠谦,李怀苑,曹宜云"
 AUTHOR_EMAIL = "2789632062@qq.com"
 PROJECT_NAME = "rs_lidar"
@@ -18,20 +18,40 @@ REQUIRES = [
     "numpy>=1.18.0",
 ]
 
+# ----------------------------工具函数 -----------------------------
+def find_so_file(bin_dir,so_name):
+    """在指定目录查找符合 .so 文件"""
+    
+    # 查找所有符合 rs_lidar.*.so 的文件（*匹配任意字符）
+    so_files = list(bin_dir.glob(f"{so_name}.*.so"))
+    
+    # 处理匹配结果
+    if not so_files:
+        raise FileNotFoundError(
+            f"未在目录 {bin_dir} 中找到符合 '{so_name}.*.so' 模式的文件\n"
+            "请检查C++代码是否已编译，或编译产物路径是否正确"
+        )
+    if len(so_files) > 1:
+        raise RuntimeError(
+            f"在目录 {bin_dir} 中找到多个匹配文件：{so_files}\n"
+            "请确保仅存在一个编译产物（删除多余版本后重试）"
+        )
+    return so_files[0] 
+
+# -------------------------- 扩展模块配置 --------------------------
+
+ext_name = "rs_lidar"
+bin_dir = Path(__file__).parent / "../cpp" / "build" / "bin"
+bin_dir = bin_dir.resolve()  # 转换为绝对路径，避免相对路径问题
+so_path = find_so_file(bin_dir,ext_name)
+
 # -------------------------- 扩展模块配置 --------------------------
 def get_extensions():
-    # 定位.so文件（相对于setup.py所在目录，向上一级找cpp目录）
-    so_path = Path(__file__).parent / "../cpp" / "build" / "bin" / "rs_lidar.cpython-310-x86_64-linux-gnu.so"
-    so_path = so_path.resolve()  # 转换为绝对路径，避免相对路径解析错误
     
-    # 验证文件存在性
-    if not so_path.exists():
-        raise FileNotFoundError(f"未找到编译好的扩展模块: {so_path}\n请检查路径是否正确或重新编译C++代码")
-
-    # 扩展模块直接命名为"rs_lidar"（顶层模块）
+    # 扩展模块配置（保持不变）
     ext = Extension(
-        name="rs_lidar",  # 关键：与pybind11定义的模块名一致
-        sources=[],  # 已编译好的.so无需源文件
+        name=ext_name,  # 与pybind11定义的模块名一致
+        sources=[], 
         library_dirs=[str(so_path.parent)],
         extra_link_args=[str(so_path)]
     )
@@ -40,17 +60,13 @@ def get_extensions():
 # -------------------------- 编译配置 --------------------------
 class BuildExt(build_ext):
     def build_extension(self, ext):
-        # 目标路径：生成的模块文件直接为rs_lidar.so（或对应平台的扩展格式）
-        dest_path = self.get_ext_fullpath(ext.name)  # ext.name为"rs_lidar"
+
+        dest_path = self.get_ext_fullpath(ext.name)
         dest_dir = os.path.dirname(dest_path)
         
-        # 创建目标目录（确保安装路径存在）
         os.makedirs(dest_dir, exist_ok=True)
         
-        # 复制.so文件到安装路径
-        so_path = Path(__file__).parent / "../cpp" / "build" / "bin" / "rs_lidar.cpython-310-x86_64-linux-gnu.so"
-        so_path = so_path.resolve()
-        
+        # 复制文件到安装路径
         self.copy_file(str(so_path), dest_path)
         self.announce(f"已复制扩展模块到: {dest_path}", level=3)
 
@@ -65,7 +81,7 @@ setup(
     ext_modules=get_extensions(),
     cmdclass={"build_ext": BuildExt},
     install_requires=REQUIRES,
-    python_requires=">=3.6, <=3.14",
+    python_requires=">=3.6, <=3.12",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",

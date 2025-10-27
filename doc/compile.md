@@ -61,10 +61,10 @@ option(RS_TIME_RECORD "cout time record to console" OFF)
 ```bash
 chmod +x cmake_make.sh
 chmod +x clean_build.sh
-chmod +x test_pcap.sh
+chmod +x run_demo_pcap.sh
 
 ./cmake_make.sh
-./test_pcap.sh
+./run_demo_pcap.sh
 ```
 
 - *python*目录下执行
@@ -73,11 +73,11 @@ chmod +x test_pcap.sh
 chmod +x bdist_wheel.sh
 chmod +x clean_build.sh
 chmod +x pip_install_wheel.sh
-chmod +x run_test_pcap.sh
+chmod +x run_demo_pcap.sh
 
 ./bdist_wheel.sh
 ./pip_install_wheel.sh
-./run_test_pcap.sh
+./run_demo_pcap.sh
 ```
 
 **若无效请尝试**

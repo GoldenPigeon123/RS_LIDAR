@@ -15,7 +15,6 @@ LidarViewer::~LidarViewer() {
     std::lock_guard<std::mutex> lock(mutex_);
     if (viewer_) {
         viewer_->removeAllPointClouds();
-        viewer_->close();
     }
 }
 

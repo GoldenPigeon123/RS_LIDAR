@@ -61,7 +61,7 @@ def main():
     finally:
         # 确保资源释放
         print("正在关闭程序...")
-        reader.stop()
+        # reader.stop()
             
 
 if __name__ == "__main__":

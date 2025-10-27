@@ -1,3 +1,3 @@
-cd test
-python test_pcap.py
+cd demo
+python demo_pcap.py
 cd ..
