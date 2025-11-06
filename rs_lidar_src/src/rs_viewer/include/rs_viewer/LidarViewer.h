@@ -26,8 +26,10 @@ public:
     explicit LidarViewer(const std::string& window_name = "Lidar Viewer");
     ~LidarViewer();
 
-    // 在init()前设置渲染模式（"RGB"或"Intensity"，不检查输入）
+    // 在init()前设置渲染模式（"RGB"或"Intensity)
     void setRenderMode(const std::string& mode);
+
+    const std::string& getRenderMode() const { return render_mode_; }
 
     // 初始化可视化器（需在setRenderMode后调用）
     bool init();
